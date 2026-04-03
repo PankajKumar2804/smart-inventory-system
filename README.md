@@ -75,28 +75,91 @@ pip install -r requirements.txt
 python setup.py
 ```
 
-## 💡 Usage Examples
+## � Advanced Analytics
 
-### Track Inventory
-```python
-from inventory import InventoryManager
-
-manager = InventoryManager()
-
-# Add stock
-manager.add_stock(product_id="SKU_123", quantity=100, location="WH_A")
-
-# Get current stock
-stock = manager.get_stock("SKU_123")
-print(f"Available: {stock.quantity}, Reserved: {stock.reserved}")
-
-# Update stock
-manager.update_stock("SKU_123", quantity=80)
-```
-
-### Demand Forecasting
+### Demand Forecasting (950+ MAPE)
 ```python
 from analyzer import DemandForecaster
+
+forecaster = DemandForecaster(
+    method='exponential_smoothing',  # or 'arima', 'lstm'
+    confidence_interval=0.95
+)
+
+# Train on historical data
+forecaster.fit(
+    product_id='SKU_123',
+    data=sales_history,
+    lookback_period=90
+)
+
+# Forecast next 30 days
+forecast = forecaster.predict(days=30)
+print(f"Predicted demand: {forecast.mean}")
+print(f"95% CI: [{forecast.lower}, {forecast.upper}]")
+```
+
+### ABC Inventory Analysis
+```python
+from analyzer import ABCAnalyzer
+
+analyzer = ABCAnalyzer(pareto_ratio=0.8)
+
+# Classify products
+classification = analyzer.classify_inventory(
+    products=product_df,
+    metrics=['revenue', 'quantity', 'turnover']
+)
+
+# Get alerts for A-class items
+a_items = classification['A']
+print(f"Critical items (A): {len(a_items)}")
+for item in a_items:
+    reorder = analyzer.calculate_reorder_point(item)
+    print(f"SKU {item.id}: Reorder at {reorder} units")
+```
+
+### Smart Reordering
+```python
+from inventory import InventoryManager
+from analyzer import ReorderOptimizer
+
+manager = InventoryManager()
+optimizer = ReorderOptimizer(lead_time=7)
+
+# Calculate optimal reorder quantity
+for product in active_products:
+    rq = optimizer.calculate_eoq(
+        annual_demand=product.annual_demand,
+        holding_cost=product.holding_cost,
+        order_cost=product.order_cost
+    )
+    
+    # Place auto-order if below threshold
+    if product.stock < product.safety_stock:
+        manager.create_purchase_order(
+            product_id=product.id,
+            quantity=rq
+        )
+```
+
+### Performance Metrics
+```python
+from analyzer import PerformanceMetrics
+
+metrics = PerformanceMetrics()
+
+# Calculate KPIs
+kpis = metrics.calculate(
+    period='monthly',
+    inventory_data=current_inventory
+)
+
+print(f"Inventory Turnover: {kpis.turnover:.2f}x")
+print(f"Stock Accuracy: {kpis.accuracy:.1%}")
+print(f"Forecast MAPE: {kpis.mape:.2%}")
+print(f"Zero-Stock Days: {kpis.zero_stock_days}")
+```
 
 forecaster = DemandForecaster()
 
