@@ -290,7 +290,3 @@ MIT License - See [LICENSE](LICENSE)
 **Pankaj Kumar**
 - GitHub: [@PankajKumar2804](https://github.com/PankajKumar2804)
 - Email: pankaj@willsscorps.io
-
----
-
-**Made with ❤️ by willsscorps - AI-Powered Supply Chain Solutions**
